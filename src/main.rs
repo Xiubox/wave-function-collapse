@@ -1,7 +1,7 @@
 use rand::{rngs::StdRng, seq::SliceRandom, Rng, SeedableRng};
 use std::vec::Vec;
 use std::{
-    collections::{BTreeSet, HashSet},
+    collections::BTreeSet,
     fmt::{Debug, Display},
     time::Instant,
 };
@@ -28,25 +28,6 @@ trait Tile {
     fn is_collapsed(&self) -> bool;
 
     fn value(&self) -> Self::Output;
-}
-
-struct Tileset<T: Tile>(Vec<T>);
-
-impl<T: Tile + Display> Tileset<T> {
-    pub fn new(tiles: Vec<T>) -> Self {
-        Self(tiles)
-    }
-}
-
-impl<T: Tile + Display> Display for Tileset<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let message = self
-            .0
-            .iter()
-            .fold("".to_owned(), |message, tile| format!("{message}{tile}"));
-
-        writeln!(f, "{message}")
-    }
 }
 
 struct Grid<T: Tile>(Vec<Vec<T>>);
@@ -196,7 +177,7 @@ struct TerrainSample<T: Tile> {
 }
 
 impl<T: Tile + Clone + PartialEq + Debug> TerrainSample<T> {
-    pub fn new(mut data: Vec<Vec<T>>) -> Self {
+    pub fn new(data: Vec<Vec<T>>) -> Self {
         let mut tileset = Vec::new();
         let map: Vec<Vec<usize>> = data
             .iter()
@@ -237,8 +218,6 @@ impl<T: Tile + Clone + PartialEq + Debug> TerrainSample<T> {
             row.iter().enumerate().for_each(|(y, &tile_index)| {
                 constraints[tile_index].extend(Self::get_neighbors(map, x, y))
             });
-
-            // constraints
         });
 
         println!("{tileset:?}\n{constraints:?}");
@@ -248,39 +227,6 @@ impl<T: Tile + Clone + PartialEq + Debug> TerrainSample<T> {
             .map(|set| set.into_iter().collect::<Vec<usize>>())
             .collect()
     }
-
-    // fn generate_constraints(tileset: &Vec<T>, map: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
-    //     map.iter()
-    //         .enumerate()
-    //         .fold(vec![vec![]; tileset.len()], |mut constraints, (x, row)| {
-    //             row.iter().enumerate().for_each(|(y, &tile_index)| {
-    //                 let valid_neighbors = Self::get_neighbors(map, x, y);
-    //                 let valid_neighbors_indices: Vec<usize> = valid_neighbors
-    //                     .iter()
-    //                     .filter_map(|&(neighbor_x, neighbor_y)| {
-    //                         map.get(neighbor_x).and_then(|r| r.get(neighbor_y).cloned())
-    //                     })
-    //                     .collect();
-
-    //                 constraints[tile_index].extend(valid_neighbors_indices)
-    //             });
-
-    //             constraints
-    //         });
-
-    //     map.iter()
-    //         .enumerate()
-    //         .fold(vec![vec![]; tileset.len()], |mut constraints, (x, row)| {
-    //             row.iter().enumerate().for_each(|(y, &tile_index)| {
-    //                 let valid_neighbors = Self::get_neighbors(map, x, y);
-    //                 let valid_neighbor_indicies = valid_neighbors.iter().filter_map(|&|)
-
-    //                 constraints[tile_index].extend(valid_neighbor_indicies);
-    //             });
-
-    //             constraints
-    //         })
-    // }
 
     fn get_neighbors(map: &Vec<Vec<usize>>, x: usize, y: usize) -> Vec<usize> {
         let mut neighbors = Vec::new();
